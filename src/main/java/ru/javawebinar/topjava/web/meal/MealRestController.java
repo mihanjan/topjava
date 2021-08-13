@@ -8,7 +8,9 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
+import ru.javawebinar.topjava.web.SecurityUtil;
 
+import java.security.Security;
 import java.util.List;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
@@ -21,30 +23,30 @@ public class MealRestController {
     @Autowired
     private MealService service;
 
-    public List<MealTo> getAll(int userId, int caloriesPerDay) {
+    public List<MealTo> getAll() {
         log.info("getAll");
-        return MealsUtil.getTos(service.getAll(userId), caloriesPerDay);
+        return MealsUtil.getTos(service.getAll(SecurityUtil.authUserId()), SecurityUtil.authUserCaloriesPerDay());
     }
 
-    public Meal get(int id, int userId) {
+    public Meal get(int id) {
         log.info("get {}", id);
-        return service.get(id, userId);
+        return service.get(id, SecurityUtil.authUserId());
     }
 
-    public Meal create(Meal meal, int userId) {
+    public Meal create(Meal meal) {
         log.info("create {}", meal);
         checkNew(meal);
-        return service.create(meal, userId);
+        return service.create(meal, SecurityUtil.authUserId());
     }
 
-    public void delete(int id, int userId) {
+    public void delete(int id) {
         log.info("delete {}", id);
-        service.delete(id, userId);
+        service.delete(id, SecurityUtil.authUserId());
     }
 
-    public void update(Meal meal, int id, int userId) {
+    public void update(Meal meal, int id) {
         log.info("update {} with id={}", meal, id);
         assureIdConsistent(meal, id);
-        service.update(meal, userId);
+        service.update(meal, SecurityUtil.authUserId());
     }
 }

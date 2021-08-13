@@ -22,16 +22,16 @@ public class SpringMain {
             adminUserController.create(new User(null, "userName", "email@mail.ru", "password", Role.ADMIN));
 
             MealRestController mealRestController = appCtx.getBean(MealRestController.class);
-            mealRestController.getAll(SecurityUtil.authUserId(), SecurityUtil.authUserCaloriesPerDay()).forEach(System.out::println);
+            mealRestController.getAll().forEach(System.out::println);
             System.out.println();
-//            mealRestController.delete(6, SecurityUtil.authUserId());
-//            mealRestController.getAll(SecurityUtil.authUserId(), SecurityUtil.authUserCaloriesPerDay()).forEach(System.out::println);
+//            mealRestController.delete(6);
+//            mealRestController.getAll().forEach(System.out::println);
 //            System.out.println();
-//            mealRestController.create(new Meal(1, LocalDateTime.of(2020, Month.JANUARY, 31, 14, 0), "Обед", 1000), SecurityUtil.authUserId());
-//            mealRestController.getAll(SecurityUtil.authUserId(), SecurityUtil.authUserCaloriesPerDay()).forEach(System.out::println);
+//            mealRestController.create(new Meal(1, LocalDateTime.of(2020, Month.JANUARY, 31, 14, 0), "Обед", 1000));
+//            mealRestController.getAll().forEach(System.out::println);
 //            System.out.println();
-            mealRestController.update(new Meal(1, LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин_1", 500), 3, SecurityUtil.authUserId());
-            mealRestController.getAll(SecurityUtil.authUserId(), SecurityUtil.authUserCaloriesPerDay()).forEach(System.out::println);
+            mealRestController.update(new Meal(1, LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин_1", 500), 3);
+            mealRestController.getAll().forEach(System.out::println);
             System.out.println();
         }
     }
