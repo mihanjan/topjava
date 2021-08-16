@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
 import javax.servlet.ServletException;
@@ -12,8 +13,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Objects;
 
 public class MealServlet extends HttpServlet {
@@ -66,6 +70,27 @@ public class MealServlet extends HttpServlet {
                         mealRestController.get(getId(request));
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
+                break;
+            case "filter":
+                log.info("getFiltered");
+                String d1 = request.getParameter("startDate");
+                String d2 = request.getParameter("endDate");
+                String t1 = request.getParameter("startTime");
+                String t2 = request.getParameter("endTime");
+
+                List<MealTo> meals;
+                if (d1.isEmpty() || d2.isEmpty() || t1.isEmpty() || t2.isEmpty()) {
+                    meals = mealRestController.getAll();
+                } else {
+                    LocalDate ld1 = d1.isEmpty() ? LocalDate.MIN : LocalDate.parse(d1);
+                    LocalDate ld2 = d2.isEmpty() ? LocalDate.MAX : LocalDate.parse(d2);
+                    LocalTime lt1 = t1.isEmpty() ? LocalTime.MIN : LocalTime.parse(t1);
+                    LocalTime lt2 = t2.isEmpty() ? LocalTime.MAX : LocalTime.parse(t2);
+                    meals = mealRestController.getFiltered(ld1, ld2, lt1, lt2);
+                }
+
+                request.setAttribute("meals", meals);
+                request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
             case "all":
             default:
