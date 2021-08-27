@@ -5,18 +5,14 @@ import org.junit.runner.RunWith;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.lang.Nullable;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
 
@@ -72,17 +68,21 @@ public class MealServiceTest {
     @Test
     public void getAll() {
         List<Meal> all = service.getAll(USER_ID);
-        assertMatch(all, breakfast, dinner, lunch, supper);
+        assertMatch(all, supperNextDay, supper, lunch, dinner, breakfast);
     }
 
-//    public List<Meal> getBetweenInclusive(@Nullable LocalDate startDate, @Nullable LocalDate endDate, int userId) {
-//        return repository.getBetweenHalfOpen(atStartOfDayOrMin(startDate), atStartOfNextDayOrMax(endDate), userId);
-//    }
+    @Test
+    public void getBetweenInclusive() {
+        List<Meal> all = service.getBetweenInclusive(LocalDate.of(2020, Month.JANUARY, 31),
+                LocalDate.of(2020, Month.JANUARY, 31),
+                USER_ID);
+        assertMatch(all, supper, lunch, dinner, breakfast);
+    }
 
     @Test
     public void duplicateDateCreate() {
         assertThrows(DataAccessException.class, () ->
-                service.create(new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000), USER_ID));
+                service.create(new Meal(breakfast.getDateTime(), breakfast.getDescription(), breakfast.getCalories()), USER_ID));
     }
 
     @Test

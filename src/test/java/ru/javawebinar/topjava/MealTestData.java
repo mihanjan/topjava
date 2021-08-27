@@ -6,21 +6,23 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Arrays;
 
-import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
 import static org.assertj.core.api.Assertions.assertThat;
+import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
 
 public class MealTestData {
     public static final int USER_ID = START_SEQ;
-//    public static final int ADMIN_ID = START_SEQ + 1;
+    //    public static final int ADMIN_ID = START_SEQ + 1;
     public static final int NOT_FOUND = 10;
 
     public static final Meal breakfast = new Meal(START_SEQ + 2, LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000);
     public static final Meal dinner = new Meal(START_SEQ + 3, LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500);
     public static final Meal lunch = new Meal(START_SEQ + 4, LocalDateTime.of(2020, Month.JANUARY, 31, 17, 0), "Ланч", 100);
     public static final Meal supper = new Meal(START_SEQ + 5, LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410);
+    public static final Meal supperNextDay = new Meal(START_SEQ + 6, LocalDateTime.of(2020, Month.FEBRUARY, 1, 19, 30), "Ужин (след. день)", 600);
+    public static final Meal adminMeal = new Meal(START_SEQ + 7, LocalDateTime.of(2020, Month.FEBRUARY, 1, 21, 30), "Еда админа", 700);
 
     public static Meal getNew() {
-        return new Meal(START_SEQ + 6, LocalDateTime.of(2020, Month.FEBRUARY, 1, 13, 0), "Новая еда", 1111);
+        return new Meal(LocalDateTime.of(2020, Month.FEBRUARY, 1, 23, 30), "Новая еда", 1111);
     }
 
     public static Meal getUpdated() {
