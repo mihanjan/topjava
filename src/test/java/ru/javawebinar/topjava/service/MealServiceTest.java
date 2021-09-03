@@ -1,6 +1,12 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Stopwatch;
+import org.junit.rules.TestName;
+import org.junit.rules.TestWatcher;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -29,6 +35,21 @@ public class MealServiceTest {
 
     @Autowired
     private MealService service;
+
+    @Rule
+    Stopwatch stopwatch = new Stopwatch();
+
+//    @Before
+//    public void before() {
+//        System.out.println("before");
+//    }
+//
+//    @After
+//    public void after() {
+//        System.out.println("after");
+//    }
+
+
 
     @Test
     public void delete() {
