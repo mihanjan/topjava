@@ -14,7 +14,7 @@
 <!-- Change DB by comment/uncomment property-placeholder -->
 
 <!--    <context:property-placeholder location="classpath:db/postgres.properties" system-properties-mode="OVERRIDE"/>-->
-    <context:property-placeholder location="classpath:db/hsqldb.properties" system-properties-mode="OVERRIDE"/>
+<!--    <context:property-placeholder location="classpath:db/hsqldb.properties" system-properties-mode="OVERRIDE"/>-->
 
 <!--
     For postgres driver logging
@@ -44,6 +44,7 @@
             <map>
                 <entry key="#{T(org.hibernate.cfg.AvailableSettings).FORMAT_SQL}" value="${hibernate.format_sql}"/>
                 <entry key="#{T(org.hibernate.cfg.AvailableSettings).USE_SQL_COMMENTS}" value="${hibernate.use_sql_comments}"/>
+                <entry key="#{T(org.hibernate.cfg.AvailableSettings).JPA_PROXY_COMPLIANCE}" value="false"/>
                 <!--<entry key="#{T(org.hibernate.cfg.AvailableSettings).HBM2DDL_AUTO}" value="${hibernate.hbm2ddl.auto}"/>-->
             </map>
         </property>
