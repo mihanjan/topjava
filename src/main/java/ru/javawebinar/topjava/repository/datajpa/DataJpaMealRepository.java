@@ -1,16 +1,11 @@
 package ru.javawebinar.topjava.repository.datajpa;
 
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.Assert;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.MealRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @Repository
 public class DataJpaMealRepository implements MealRepository {
@@ -61,5 +56,14 @@ public class DataJpaMealRepository implements MealRepository {
     @Override
     public List<Meal> getBetweenHalfOpen(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) {
         return crudMealRepository.findAllBetweenHalfOpen(startDateTime, endDateTime, userId);
+    }
+
+    @Override
+    public Meal getMealWithUser(int id, int userId) {
+        Meal meal = get(id, userId);
+        if (meal != null) {
+            meal.setUser(crudUserRepository.findById(userId).orElse(null));
+        }
+        return meal;
     }
 }
