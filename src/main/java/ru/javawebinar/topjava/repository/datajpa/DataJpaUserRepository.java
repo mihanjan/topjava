@@ -48,12 +48,12 @@ public class DataJpaUserRepository implements UserRepository {
 
     @Override
     public User getUserWithMeals(int id) {
-        User user = get(id);
-        if (user != null) {
-            user.setMeals(crudMealRepository.findAllByUserIdOrderByDateTimeDesc(id));
-        }
-        return user;
+//        User user = get(id);
+//        if (user != null) {
+//            user.setMeals(crudMealRepository.findAllByUserIdOrderByDateTimeDesc(id));
+//        }
+//        return user;
 
-//        return crudUserRepository.getUserWithMeals(id);
+        return crudUserRepository.getUserWithMeals(id);
     }
 }

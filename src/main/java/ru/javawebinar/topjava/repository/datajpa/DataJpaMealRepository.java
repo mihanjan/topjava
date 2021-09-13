@@ -36,18 +36,10 @@ public class DataJpaMealRepository implements MealRepository {
 
     @Override
     public Meal get(int id, int userId) {
-    /*
-        Сначала хотел релизовать через crudMealRepository.findByIdAndUserId(id, userId),
-        но тогда бы к запросу добавился join к таблице users
-     */
-
         return crudMealRepository
                 .findById(id)
                 .filter(meal -> meal.getUser().getId() == userId)
                 .orElse(null);
-
-//        Meal meal = crudMealRepository.findById(id).orElse(null);
-//        return meal != null && meal.getUser().getId() == userId ? meal : null;
     }
 
     @Override
