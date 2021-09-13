@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
@@ -19,6 +20,7 @@ public class DataJpaUserRepository implements UserRepository {
         this.crudMealRepository = crudMealRepository;
     }
 
+    @Transactional
     @Override
     public User save(User user) {
         return crudUserRepository.save(user);
@@ -51,5 +53,7 @@ public class DataJpaUserRepository implements UserRepository {
             user.setMeals(crudMealRepository.findAllByUserIdOrderByDateTimeDesc(id));
         }
         return user;
+
+//        return crudUserRepository.getUserWithMeals(id);
     }
 }

@@ -11,8 +11,6 @@ import ru.javawebinar.topjava.model.Meal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Repository
-@Profile(Profiles.POSTGRES_DB)
 public class PostgresJdbcMealRepository extends JdbcMealRepository {
     public PostgresJdbcMealRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         super(jdbcTemplate, namedParameterJdbcTemplate);
