@@ -17,4 +17,11 @@ public class JdbcUserServiceTest extends AbstractUserServiceTest {
         User admin = service.get(ADMIN_ID);
         MATCHER.assertMatch(admin, UserTestData.admin);
     }
+
+    @Test
+    public void updateAdmin() {
+        User updated = getUpdatedAdmin();
+        service.update(updated);
+        MATCHER.assertMatch(service.get(ADMIN_ID), getUpdatedAdmin());
+    }
 }

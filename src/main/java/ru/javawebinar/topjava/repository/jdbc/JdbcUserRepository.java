@@ -3,7 +3,10 @@ package ru.javawebinar.topjava.repository.jdbc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.DataAccessUtils;
-import org.springframework.jdbc.core.*;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -12,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
+import ru.javawebinar.topjava.util.ValidationUtil;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -47,46 +51,36 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     @Transactional
     public User save(User user) {
+        ValidationUtil.validate(user);
         BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(user);
 
         if (user.isNew()) {
             Number newKey = insertUser.executeAndReturnKey(parameterSource);
             user.setId(newKey.intValue());
         } else if (namedParameterJdbcTemplate.update("""
-                   UPDATE users SET name=:name, email=:email, password=:password, 
+                   UPDATE users SET name=:name, email=:email, password=:password,
                    registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id
                 """, parameterSource) == 0) {
             return null;
         }
 
-//        jdbcTemplate.batchUpdate(
-//                "update user_roles set user_id = ? where id = ?",
-//                new BatchPreparedStatementSetter() {
-//
-//                    public void setValues(PreparedStatement ps, int i)
-//                            throws SQLException {
-//                        ps.setBigDecimal(1, user.get(i).getPrice());
-//                        ps.setLong(2, user.get(i).getId());
-//                    }
-//
-//                    public int getBatchSize() {
-//                        return books.size();
-//                    }
-//
-//                });
+        int id = user.getId();
+        jdbcTemplate.update("DELETE FROM user_roles WHERE user_id = ?", id);
 
+        List<Role> roles = List.copyOf(user.getRoles());
+        jdbcTemplate.batchUpdate(
+                "INSERT INTO user_roles (role, user_id) VALUES (?, ?)",
+                new BatchPreparedStatementSetter() {
 
-//        namedParameterJdbcTemplate.batchUpdate("",
-//                user,
-//                200,
-//                new ParameterizedPreparedStatementSetter<User>() {
-//                    public void setValues(PreparedStatement ps, User user) throws SQLException {
-//                        ps.setBig
-//                        ps.setBigDecimal(1, argument.getPrice());
-//                        ps.setLong(2, argument.getId());
-//                    }
-//                }); )
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        ps.setString(1, roles.get(i).toString());
+                        ps.setInt(2, id);
+                    }
 
+                    public int getBatchSize() {
+                        return roles.size();
+                    }
+                });
         return user;
     }
 
@@ -121,6 +115,7 @@ public class JdbcUserRepository implements UserRepository {
                 int id = rs.getInt("id");
                 if (!users.containsKey(id)) {
                     User user = ROW_MAPPER.mapRow(rs, rs.getRow());
+                    ValidationUtil.validate(user);
                     user.setRoles(null);
                     users.put(id, user);
                 }
