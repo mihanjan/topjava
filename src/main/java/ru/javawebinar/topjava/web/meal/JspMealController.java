@@ -7,14 +7,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
-import ru.javawebinar.topjava.to.MealTo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.Objects;
 
 import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalDate;
@@ -36,6 +34,17 @@ public class JspMealController extends AbstractMealController {
         return "meals";
     }
 
+    @GetMapping("/filter")
+    public String getBetween(HttpServletRequest request) {
+        LocalDate startDate = parseLocalDate(request.getParameter("startDate"));
+        LocalDate endDate = parseLocalDate(request.getParameter("endDate"));
+        LocalTime startTime = parseLocalTime(request.getParameter("startTime"));
+        LocalTime endTime = parseLocalTime(request.getParameter("endTime"));
+
+        request.setAttribute("meals", getBetween(startDate, startTime, endDate, endTime));
+        return "meals";
+    }
+
     @GetMapping("/delete")
     public String delete(HttpServletRequest request) {
         delete(getId(request));
@@ -51,12 +60,6 @@ public class JspMealController extends AbstractMealController {
         return "mealForm";
     }
 
-    @PostMapping("/create")
-    public String createMeal(HttpServletRequest request) {
-        create(getMeal(request));
-        return "redirect:/meals";
-    }
-
     @GetMapping("/update")
     public String update(HttpServletRequest request) {
         final Meal meal = get(getId(request));
@@ -65,21 +68,14 @@ public class JspMealController extends AbstractMealController {
         return "mealForm";
     }
 
-    @PostMapping("/update")
-    public String updateMeal(HttpServletRequest request) {
-        update(getMeal(request), getId(request));
+    @PostMapping
+    public String saveMeal(HttpServletRequest request) {
+        if (request.getParameter("id").isEmpty()) {
+            create(getMeal(request));
+        } else {
+            update(getMeal(request), getId(request));
+        }
         return "redirect:/meals";
-    }
-
-    @GetMapping("/filter")
-    public String getBetween(HttpServletRequest request) {
-        LocalDate startDate = parseLocalDate(request.getParameter("startDate"));
-        LocalDate endDate = parseLocalDate(request.getParameter("endDate"));
-        LocalTime startTime = parseLocalTime(request.getParameter("startTime"));
-        LocalTime endTime = parseLocalTime(request.getParameter("endTime"));
-
-        request.setAttribute("meals", getBetween(startDate, startTime, endDate, endTime));
-        return "meals";
     }
 
     private Meal getMeal(HttpServletRequest request) {

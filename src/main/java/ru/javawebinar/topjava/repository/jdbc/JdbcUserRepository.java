@@ -20,9 +20,10 @@ import ru.javawebinar.topjava.util.ValidationUtil;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 @Transactional(readOnly = true)
@@ -57,17 +58,19 @@ public class JdbcUserRepository implements UserRepository {
         if (user.isNew()) {
             Number newKey = insertUser.executeAndReturnKey(parameterSource);
             user.setId(newKey.intValue());
-        } else if (namedParameterJdbcTemplate.update("""
-                   UPDATE users SET name=:name, email=:email, password=:password,
-                   registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id
-                """, parameterSource) == 0) {
-            return null;
+        } else {
+            if (namedParameterJdbcTemplate.update("""
+                       UPDATE users SET name=:name, email=:email, password=:password,
+                       registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id
+                    """, parameterSource) == 0) {
+                return null;
+            }
+            jdbcTemplate.update("DELETE FROM user_roles WHERE user_id = ?", user.getId());
         }
 
         int id = user.getId();
-        jdbcTemplate.update("DELETE FROM user_roles WHERE user_id = ?", id);
-
         List<Role> roles = List.copyOf(user.getRoles());
+
         jdbcTemplate.batchUpdate(
                 "INSERT INTO user_roles (role, user_id) VALUES (?, ?)",
                 new BatchPreparedStatementSetter() {
@@ -110,13 +113,12 @@ public class JdbcUserRepository implements UserRepository {
     private static class UserResultSetExtractor implements ResultSetExtractor<List<User>> {
         @Override
         public List<User> extractData(ResultSet rs) throws SQLException, DataAccessException {
-            Map<Integer, User> users = new ConcurrentHashMap<>();
+            Map<Integer, User> users = new HashMap<>();
             while (rs.next()) {
                 int id = rs.getInt("id");
                 if (!users.containsKey(id)) {
                     User user = ROW_MAPPER.mapRow(rs, rs.getRow());
-                    ValidationUtil.validate(user);
-                    user.setRoles(null);
+                    user.setRoles(EnumSet.noneOf(Role.class));
                     users.put(id, user);
                 }
 

@@ -5,6 +5,8 @@ import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 @Repository
@@ -44,6 +46,10 @@ public class DataJpaUserRepository implements UserRepository {
 
     @Override
     public User getWithMeals(int id) {
-        return crudRepository.getWithMeals(id);
+        User user = crudRepository.getWithMeals(id);
+        if (user != null) {
+            user.setMeals(new ArrayList<>(new LinkedHashSet<>(user.getMeals())));
+        }
+        return user;
     }
 }
