@@ -14,6 +14,6 @@ public class ResourceControllerTest extends AbstractControllerTest {
         perform(get("/resources/css/style.css"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("text/css;charset=UTF-8"));
+                .andExpect(content().contentTypeCompatibleWith("text/css"));
     }
 }
