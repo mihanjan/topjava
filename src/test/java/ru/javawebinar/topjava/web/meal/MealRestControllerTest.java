@@ -5,17 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.SecurityUtil;
 import ru.javawebinar.topjava.web.json.JsonUtil;
-
-import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -83,12 +79,36 @@ class MealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getBetween() throws Exception {
-        String startDate = "2010-12-03T10:00:00";
-        String startTime = "2010-12-03T00:00:00";
-        String endDate = "2030-12-03T10:00:00";
-        String endTime = "2030-12-03T23:59:59";
+        String startDate = "2010-12-03";
+        String startTime = "00:00:00";
+        String endDate = "2030-12-03";
+        String endTime = "23:59:59";
 
         perform(MockMvcRequestBuilders.get(REST_URL + "filtered?" + "startDate=" + startDate + "&startTime=" + startTime + "&endDate=" + endDate + "&endTime=" + endTime))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(TO_MATCHER.contentJson(MealsUtil.getTos(meals, SecurityUtil.authUserCaloriesPerDay())));
+    }
+
+    @Test
+    void getBetweenDate() throws Exception {
+        String startDate = "2010-12-03";
+        String endDate = "2030-12-03";
+
+        perform(MockMvcRequestBuilders.get(REST_URL + "filtered?" + "startDate=" + startDate + "&endDate=" + endDate))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(TO_MATCHER.contentJson(MealsUtil.getTos(meals, SecurityUtil.authUserCaloriesPerDay())));
+    }
+
+    @Test
+    void getBetweenTime() throws Exception {
+        String startTime = "00:00:00";
+        String endTime = "23:59:59";
+
+        perform(MockMvcRequestBuilders.get(REST_URL + "filtered?" + "startTime=" + startTime + "&endTime=" + endTime))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
