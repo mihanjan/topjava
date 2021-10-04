@@ -79,12 +79,11 @@ class MealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getBetween() throws Exception {
-        String startDate = "2010-12-03";
-        String startTime = "00:00:00";
-        String endDate = "2030-12-03";
-        String endTime = "23:59:59";
-
-        perform(MockMvcRequestBuilders.get(REST_URL + "filtered?" + "startDate=" + startDate + "&startTime=" + startTime + "&endDate=" + endDate + "&endTime=" + endTime))
+        perform(MockMvcRequestBuilders.get(REST_URL + "filtered")
+                .param("startDate", "2010-12-03")
+                .param("startTime", "00:00:00")
+                .param("endDate", "2030-12-03")
+                .param("endTime", "23:59:59"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -93,10 +92,7 @@ class MealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getBetweenDate() throws Exception {
-        String startDate = "2010-12-03";
-        String endDate = "2030-12-03";
-
-        perform(MockMvcRequestBuilders.get(REST_URL + "filtered?" + "startDate=" + startDate + "&endDate=" + endDate))
+        perform(MockMvcRequestBuilders.get(REST_URL + "filtered").param("startDate", "2010-12-03").param("endDate", "2030-12-03"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -105,10 +101,7 @@ class MealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getBetweenTime() throws Exception {
-        String startTime = "00:00:00";
-        String endTime = "23:59:59";
-
-        perform(MockMvcRequestBuilders.get(REST_URL + "filtered?" + "startTime=" + startTime + "&endTime=" + endTime))
+        perform(MockMvcRequestBuilders.get(REST_URL + "filtered").param("startTime=", "00:00:00").param("endTime", "23:59:59"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
